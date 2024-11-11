@@ -65,7 +65,7 @@ CallbackBasedFilter(
   (x, cb) => {
     setTimeout(() => {
       if (x === 3) {
-        cb(new Error("Test error"), null);
+        cb(new Error("Test error example"), x > 2);
       } 
       else {
         cb(null, x > 2);
