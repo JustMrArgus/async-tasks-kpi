@@ -1,42 +1,100 @@
-const CallbackBasedFilter = (userArray, callback) => {
+const CallbackBasedFilter = (userArray, userFilter, finalCallback) => {
   const filteredArray = [];
-  let arrayIndex = 0;
+  let elementsLeft = userArray.length;
 
-  const nextElementCheck = () => {
-    if (arrayIndex < userArray.length) {
-      const element = userArray[arrayIndex++];
+  for (let i = 0; i < userArray.length; i++) {
+    userFilter(userArray[i], (error, isMatch) => {
 
-      setTimeout(() => {
-        if (callback(element)) {
-          filteredArray.push(element);
-        }
-        nextElementCheck();
-      }, 200);
+      if (error) {
+        finalCallback(error, null);
+        return;
+      }
 
-    } 
-    else {
-      console.log(filteredArray);
-    }
-  };
-
-  nextElementCheck();
-};
+      if (isMatch) {
+        filteredArray.push(userArray[i]);
+      }
+      
+      elementsLeft--;
+      if (elementsLeft === 0) {
+        finalCallback(null, filteredArray);
+      }
+    });
+  }
+}
 
 // Test cases
-let firstArray = [1, 2, 3, 4, 5, 6];
-let secondArray = ['a', 'b', 'c', 'd', 'h', 'w'];
+const firstArray = [1, 2, 3, 4, 5, 6];
+const secondArray = ['a', 'o', 'b', 'w', 'h', 'z'];
 
 CallbackBasedFilter(
   firstArray,
-  (x) => x % 2 === 0
+  (x, cb) => {
+    setTimeout(() => {
+      cb(null, x % 2 === 0);
+    }, 1000);
+  },
+  (error, filter) => {
+    if (error) {
+      console.log("Error occurred:", error);
+    } 
+    else {
+      console.log("Filtered Array:", filter);
+    }
+  }
+);
+
+CallbackBasedFilter(
+  secondArray,
+  (x, cb) => {
+    setTimeout(() => {
+      cb(null, 'hello world'.split('').includes(x));
+    }, 1000);
+  },
+  (error, filter) => {
+    if (error) {
+      console.log("Error occurred:", error);
+    } 
+    else {
+      console.log("Filtered Array:", filter);
+    }
+  }
 );
 
 CallbackBasedFilter(
   firstArray,
-  (y) => y > 2
-)
+  (x, cb) => {
+    setTimeout(() => {
+      if (x === 3) {
+        cb(new Error("Test error"), null);
+      } 
+      else {
+        cb(null, x > 2);
+      }
+    }, 1000);
+  },
+  (error, filter) => {
+    if (error) {
+      console.log("Error occurred:", error);
+    } 
+    else {
+      console.log("Filtered Array:", filter);
+    }
+  }
+);
 
 CallbackBasedFilter(
-  secondArray,
-  (n) => 'hello world'.split('').includes(n)
-)
+  firstArray,
+  (x, cb) => {
+    setTimeout(() => {
+      cb(null, x > 2);
+    }, 1000);
+  },
+  (error, filter) => {
+    if (error) {
+      console.log("Error occurred:", error);
+    } 
+    else {
+      console.log("Filtered Array:", filter);
+    }
+  }
+);
