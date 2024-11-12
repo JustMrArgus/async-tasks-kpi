@@ -1,5 +1,5 @@
 const CallbackBasedFilter = (userArray, userFilter, finalCallback) => {
-  const filteredArray = [];
+  const filteredArray = new Array(userArray.length).fill(null);
   let elementsLeft = userArray.length;
 
   for (let i = 0; i < userArray.length; i++) {
@@ -11,12 +11,12 @@ const CallbackBasedFilter = (userArray, userFilter, finalCallback) => {
       }
 
       if (isMatch) {
-        filteredArray.push(userArray[i]);
+        filteredArray[i] = userArray[i];
       }
       
       elementsLeft--;
       if (elementsLeft === 0) {
-        finalCallback(null, filteredArray);
+        finalCallback(null, filteredArray.filter(elem => elem !== null));
       }
     });
   }
