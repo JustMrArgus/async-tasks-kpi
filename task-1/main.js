@@ -1,23 +1,31 @@
 const CallbackBasedFilter = (userArray, userFilter, finalCallback) => {
-  const filteredArray = new Array(userArray.length).fill(null);
+  
+  const filteredArray = [];
+  let hasErrrorOccured = false;
   let elementsLeft = userArray.length;
 
   for (let i = 0; i < userArray.length; i++) {
     userFilter(userArray[i], (error, isMatch) => {
 
+      if (hasErrrorOccured) {
+        return;
+      }
+
       if (error) {
         finalCallback(error, null);
+        hasErrrorOccured = true;
         return;
       }
 
       if (isMatch) {
-        filteredArray[i] = userArray[i];
+        filteredArray.push(userArray[i]);
       }
       
       elementsLeft--;
       if (elementsLeft === 0) {
-        finalCallback(null, filteredArray.filter(elem => elem !== null));
+        finalCallback(null, filteredArray);
       }
+
     });
   }
 }
