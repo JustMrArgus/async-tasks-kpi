@@ -1,20 +1,15 @@
 // async/await solution
 const asyncBasedFilter = async (array, predicateFunc) => {
-  const filteredArray = new Array(array.length).fill(null);
+  const filteredArray = []
 
   for (let i = 0; i < array.length; i++) {
-      try {
-          const result = await predicateFunc(array[i]);
-          if (result) {
-            filteredArray[i] = array[i];
-          }
-      } 
-      catch (error) {
-          throw error;
-      }
+    const result = await predicateFunc(array[i]);
+      if (result) {
+      filteredArray.push(array[i]);
+    }
   }
 
-  return filteredArray.filter(elem => elem !== null);
+  return filteredArray;
 };
 
 // test cases

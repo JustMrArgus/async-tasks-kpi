@@ -1,7 +1,9 @@
 // Promise-based solution
 const promiseBasedFilter = (array, predicateFunc) => {
   return new Promise((resolve, reject) => {
-      const filteredArray = new Array(array.length).fill(null);
+
+      const filteredArray = [];
+
       let completed = 0;
 
       if (array.length === 0) {
@@ -15,14 +17,16 @@ const promiseBasedFilter = (array, predicateFunc) => {
           Promise.resolve(predicateFunc(item))
           .then((result) => {
               if (result) {
-                filteredArray[i] = item;
+                filteredArray.push(item);
               }
           })
-          .catch(reject)
+          .catch((error) => {
+            reject(error);
+          })
           .finally(() => {
             completed++;
               if (completed === array.length) {
-                  resolve(filteredArray.filter(elem => elem !== null));
+                  resolve(filteredArray);
               }
           });
       }

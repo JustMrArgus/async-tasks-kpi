@@ -1,19 +1,19 @@
 // Promise.all solution
 const promiseBasedFilter = (array, predicateFunc) => {
-  const filteredArray = new Array(array.length).fill(null);
+  const filteredArray = [];
 
-  let promises = array.map((item, index) => {
+  let promises = array.map((item) => {
     return Promise.resolve(predicateFunc(item))
     .then((result) => {
       if (result) {
-        filteredArray[index] = item;
+        filteredArray.push(item);
       }
     })
   })
 
   return Promise.all(promises)
   .then(() => {
-    return filteredArray.filter((elem) => elem !== null)
+    return filteredArray;
   })
 };
 
