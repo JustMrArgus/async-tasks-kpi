@@ -30,7 +30,6 @@ promiseBasedFilter(
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
         reject(new Error("Aborted"));
-        return;
       }
 
       const onAbort = () => {
@@ -61,7 +60,6 @@ promiseBasedFilter(
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
         reject(new Error("Aborted"));
-        return;
       }
 
       const onAbort = () => {
@@ -91,7 +89,6 @@ promiseBasedFilter(
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
         reject(new Error("Aborted"));
-        return;
       }
 
       const onAbort = () => {
