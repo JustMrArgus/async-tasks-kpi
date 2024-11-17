@@ -102,6 +102,7 @@ promiseBasedFilter(
       signal.addEventListener('abort', onAbort);
 
       const timeout = setTimeout(() => {
+        signal.removeEventListener('abort', onAbort);
         reject(new Error("Test error"));
       }, 1000);
     });
