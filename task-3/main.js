@@ -1,25 +1,20 @@
-// Promise.all solution
-const promiseBasedFilter = (array, signal, predicateFunc) => {
-  const filteredArray = new Array(array.length).fill(null);
+const promiseBasedFilter = (array, userSignal, predicateFunc) => {
+  const filteredArray = [];
 
-  let promises = array.map((item, index) => {
-    return Promise.resolve(predicateFunc(item, signal))
-    .then((result) => {
-      if (signal.aborted) throw new Error('Operation aborted');
-      if (result) {
-        filteredArray[index] = item;
-      }
-    });
+  let promises = array.map((item) => {
+    return Promise.resolve(predicateFunc(item, userSignal))
+      .then((result) => {
+        if (result) {
+          filteredArray.push(item);
+        }
+      });
   });
 
   return Promise.all(promises)
-  .then(() => {
-    if (signal.aborted) throw new Error('Operation aborted');
-    return filteredArray.filter((elem) => elem !== null);
-  });
+    .then(() => filteredArray);
 };
 
-// test cases
+// Test cases
 const controller = new AbortController();
 const mySignal = controller.signal;
 
@@ -31,67 +26,89 @@ setTimeout(() => controller.abort(), 800);
 promiseBasedFilter(
   firstArray,
   mySignal,
-  (elem) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
+  (elem, signal) => {
+    return new Promise((resolve, reject) => {
+      if (signal.aborted) {
+        reject(new Error("Aborted"));
+        return;
+      }
+
+      const onAbort = () => {
+        clearTimeout(timeout);
+        reject(new Error("Aborted"));
+      };
+
+      signal.addEventListener('abort', onAbort);
+
+      const timeout = setTimeout(() => {
+        signal.removeEventListener('abort', onAbort);
         resolve(elem % 2 === 0);
       }, 1000);
-    })
+    });
+  }
+)
+  .then((result) => {
+    console.log(result);
   })
-.then(result => {
-  console.log(result);
-})
-.catch(error => {
-  console.error(error);
-});
+  .catch((error) => {
+    console.error(error.message);
+  });
 
 promiseBasedFilter(
   secondArray,
   mySignal,
-  (elem) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
+  (elem, signal) => {
+    return new Promise((resolve, reject) => {
+      if (signal.aborted) {
+        reject(new Error("Aborted"));
+        return;
+      }
+
+      const onAbort = () => {
+        clearTimeout(timeout);
+        reject(new Error("Aborted"));
+      };
+
+      signal.addEventListener('abort', onAbort);
+
+      const timeout = setTimeout(() => {
+        signal.removeEventListener('abort', onAbort);
         resolve('hello world'.split('').includes(elem));
       }, 1000);
-    })
+    });
   })
-.then(result => {
-  console.log(result);
-}).
-catch(error => {
-  console.error(error);
-});
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 
 promiseBasedFilter(
   secondArray,
   mySignal,
-  (elem) => {
+  (elem, signal) => {
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
+      if (signal.aborted) {
+        reject(new Error("Aborted"));
+        return;
+      }
+
+      const onAbort = () => {
+        clearTimeout(timeout);
+        reject(new Error("Aborted"));
+      };
+
+      signal.addEventListener('abort', onAbort);
+
+      const timeout = setTimeout(() => {
         reject(new Error("Test error"));
       }, 1000);
-    })
+    });
   })
-.then(result => {
-  console.log(result);
-})
-.catch(error => {
-  console.error(error);
-});
-
-promiseBasedFilter(
-  firstArray,
-  mySignal,
-  (elem) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(elem > 2);
-      }, 1000);
-    })
+  .then((result) => {
+    console.log(result);
   })
-.then(result => {
-  console.log(result);
-})
-.catch(error => {
-  console.error(error);
-});
+  .catch((error) => {
+    console.error(error.message);
+  });
